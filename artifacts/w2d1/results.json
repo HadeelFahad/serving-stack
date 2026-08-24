@@ -1,0 +1,24 @@
+{
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "gpu": "Tesla T4",
+  "measurements": [
+    {
+      "dtype": "fp16",
+      "predicted_gb": 3.0,
+      "measured_gb": 3.29,
+      "tokens_per_s": 30.9
+    },
+    {
+      "dtype": "int8",
+      "predicted_gb": 1.5,
+      "measured_gb": 1.87,
+      "tokens_per_s": 5.5
+    },
+    {
+      "dtype": "int4",
+      "predicted_gb": 0.75,
+      "measured_gb": 1.24,
+      "tokens_per_s": 12.7
+    }
+  ]
+}
