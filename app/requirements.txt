@@ -14,11 +14,10 @@
 # ON COLAB: delete the torch line rather than pinning it. Colab ships torch
 # preinstalled and installing a second one breaks the runtime. Pin it locally.
 
-fastapi
-uvicorn[standard]
-pydantic
-transformers
-torch
-accelerate
-openai
-httpx
+fastapi==0.115.*
+uvicorn[standard]==0.32.*
+pydantic==2.9.*
+transformers==4.46.*
+accelerate==1.1.*
+openai==1.54.*
+httpx==0.27.*
