@@ -40,3 +40,10 @@ This repository is your code.
 
 Then read `setup.md`. It is short, and it covers the two things that go wrong:
 committing a key, and committing a model.
+
+## W2D3: Image Size Comparison
+
+| Stage | Image Size |
+| :--- | :--- |
+| naive build (full base, cached pip) | 16.4 GB |
+| your slim build | 4.15 GB |
