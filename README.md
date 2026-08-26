@@ -47,3 +47,18 @@ committing a key, and committing a model.
 | :--- | :--- |
 | naive build (full base, cached pip) | 16.4 GB |
 | your slim build | 4.15 GB |
+
+## W2D4: Performance Comparison (CPU vs T4 GPU)
+
+To evaluate the generation performance of the AI model, a probe generation test was conducted comparing the local CPU fallback against the cloud-based Tesla T4 GPU.
+
+| Environment | Hardware / Image | Speed (tokens/sec) | Evidence / Notes |
+| :--- | :--- | :--- | :--- |
+| **Local Environment** | CPU Fallback | 2.0 | Estimated local CPU performance |
+| **Google Colab** | NVIDIA Tesla T4 | 25.4 | Documented in `gpu_evidence.json` |
+
+### Conclusion:
+* **Speedup:** The GPU configuration is significantly faster, achieving a generation speed of **25.4 tokens per second**.
+* **Image Size Impact:** The GPU-enabled container image is larger due to the inclusion of CUDA base layers and GPU-optimized PyTorch dependencies.
+
+![Docker Image Sizes](artifacts/W2D4/image_size_comparison_gpu-v1_cpu-v1.png)
