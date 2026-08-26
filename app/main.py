@@ -83,6 +83,10 @@ def _build_inputs(req: ChatCompletionRequest):
         add_generation_prompt=True,
         return_tensors="pt",
     )
+    
+    if not isinstance(input_ids, torch.Tensor):
+        input_ids = input_ids["input_ids"]
+        
     return input_ids, input_ids.shape[1]
 
 
