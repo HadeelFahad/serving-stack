@@ -1,0 +1,19 @@
+FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
+
+# python is not in the CUDA base; install 3.11 explicitly - plain `python3`
+# on ubuntu22.04 is 3.10, off the course's python:3.11 baseline
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      python3.11 python3-pip python3.11-venv && \
+    rm -rf /var/lib/apt/lists/* && \
+    ln -sf /usr/bin/python3.11 /usr/local/bin/python && \
+    ln -sf /usr/bin/python3.11 /usr/local/bin/python3
+
+WORKDIR /app
+
+COPY app/requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt   # torch per ../../PINS.md
+
+COPY app/ .
+
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

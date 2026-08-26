@@ -1,0 +1,6 @@
+{
+  "cuda": true,
+  "device_name": "Tesla T4",
+  "tokens_per_s": 25.4,
+  "model": "Qwen/Qwen2.5-1.5B-Instruct"
+}
