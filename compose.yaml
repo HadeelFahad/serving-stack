@@ -1,0 +1,24 @@
+services:
+  serving:
+    image: ${IMAGE}
+    ports:
+      - "${HOST_PORT}:8000"
+    environment:
+      MODEL_ID: ${MODEL_ID}
+      # step 4 adds these; both must reach the container or its green check
+      # fails: without API_KEY inside the process, /v1 answers 200 open
+      API_KEY: ${API_KEY}
+      MAX_TOKENS: ${MAX_TOKENS}
+    volumes:
+      - hf-cache:/home/app/.cache/huggingface
+    restart: unless-stopped
+    healthcheck:
+      # curl is NOT in python:3.11-slim; python IS. Use python for the probe.
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health').status==200 else 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+
+volumes:
+  hf-cache:

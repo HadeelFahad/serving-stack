@@ -62,3 +62,29 @@ To evaluate the generation performance of the AI model, a probe generation test 
 * **Image Size Impact:** The GPU-enabled container image is larger due to the inclusion of CUDA base layers and GPU-optimized PyTorch dependencies.
 
 ![Docker Image Sizes](artifacts/W2D4/image_size_comparison_gpu-v1_cpu-v1.png)
+
+
+
+# Lab W2D5: Compose and Teams (Serving Stack)
+
+## Objective
+Transition the FastAPI serving service from manual `docker run` commands to a version-controlled **Docker Compose** deployment. The objective includes securing the API from unbounded GPU consumption, configuring internal health checks, and successfully passing the automated verification.
+
+## Key Achievements
+- **Docker Compose Setup:** Authored `compose.yaml` to orchestrate the AI serving container (`hadeel88/aidc-serving:cpu-v2`), utilizing environment variables and named volumes for HuggingFace model caching.
+- **API Security (Authentication):** Implemented a mandatory `Bearer Token` check for all `/v1/*` endpoints to protect GPU resources, while deliberately keeping `/health` open for future Kubernetes probes.
+- **Resource Limits (Max Tokens):** Enforced a hard ceiling on `max_tokens` (256) per request to mitigate unbounded consumption (OWASP LLM10).
+- **Custom Health Check:** Configured a Python-based Docker health check directly in `compose.yaml` (bypassing the lack of `curl` in the `python:3.11-slim` base image).
+- **Verification:** Successfully passed the rigorous `verify.sh` automated checks, earning the **GREEN CHECK: PASS**.
+
+---
+
+## Pre-Lab Predictions vs. Actual Outcomes
+
+| Question / Scenario | My Prediction | Actual Outcome & Reflection |
+| :--- | :--- | :--- |
+| **1. After `docker compose up -d`, how long until `docker compose ps` reports the service as healthy?** | About 60 seconds. | **Accurate.** It took around 1-2 minutes. I initially got a `000` HTTP response when testing too early, confirming the model was still loading into CPU. The `start_period: 120s` handled this perfectly. |
+| **2. If you change `MODEL_ID` in `.env` and run `docker compose up -d` again, does compose recreate the container?** | Yes. | **Correct.** Docker Compose detects changes in the mapped environment variables and forces a container recreation to apply the new state. |
+| **3. The healthcheck runs INSIDE the container. Does the base image have `curl`?** | No. | **Correct.** The `python:3.11-slim` base image strips out non-essential tools like `curl`. To solve this, we used a Python one-liner (`python -c "import urllib..."`) for the health probe. |
+| **4. Your service currently has no key. If you published this port to the internet right now, how long until someone else is generating tokens on your GPU?** | 1 hour. | **Highly Realistic.** Bots constantly scan open ports (like 8000). Implementing the `API_KEY` (OWASP LLM10) was a critical step to prevent unbounded GPU consumption. |
+| **5. After adding a key in step 4, which endpoint must still answer WITHOUT one, and why?** | `/health`, because health probes need to access it without authentication. | **Confirmed.** I verified this via `curl`. `/v1/models` returned `401 Unauthorized` without a key, while `/health` returned `200 OK`, ensuring future Kubernetes liveness probes will work. |
