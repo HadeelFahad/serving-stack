@@ -22,9 +22,10 @@ import json
 import os
 import time
 import uuid
+import logging
 
 import torch
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header, Depends
 from fastapi.responses import StreamingResponse
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -40,8 +41,22 @@ from schemas import (
 )
 
 MODEL_ID = os.environ.get("MODEL_ID", "Qwen/Qwen2.5-0.5B-Instruct")
+API_KEY = os.environ.get("API_KEY", "")
+MAX_TOKENS = int(os.environ.get("MAX_TOKENS", 256))
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="serving-stack", version="wk2")
+
+async def verify_token(authorization: str = Header(None)):
+    if not API_KEY:
+        logger.warning("WARNING: API_KEY is empty. Running unauthenticated!")
+        return
+    
+    expected_header = f"Bearer {API_KEY}"
+    if authorization != expected_header:
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
 print(f"loading {MODEL_ID} on cpu ...")
 tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
@@ -60,7 +75,7 @@ def health() -> HealthResponse:
 # ---------------------------------------------------------------------------
 # TODO 1 -- GET /v1/models
 # ---------------------------------------------------------------------------
-@app.get("/v1/models", response_model=ModelList)
+@app.get("/v1/models", response_model=ModelList, dependencies=[Depends(verify_token)])
 def list_models() -> ModelList:
     """Week 2 serves exactly one model, so data has exactly one card.
 
@@ -104,7 +119,7 @@ def _generate(input_ids, req: ChatCompletionRequest):
     return out[0][input_ids.shape[1]:]
 
 
-@app.post("/v1/chat/completions", response_model=None)
+@app.post("/v1/chat/completions", response_model=None, dependencies=[Depends(verify_token)])
 def chat_completions(req: ChatCompletionRequest):
     """Non-streaming completion in the OpenAI shape.
 
@@ -119,6 +134,9 @@ def chat_completions(req: ChatCompletionRequest):
       - the id must be unique per call; a constant string passes the verifier
         but breaks the agentic client in week 4.
     """
+    if req.max_tokens > MAX_TOKENS:
+        req.max_tokens = MAX_TOKENS
+        
     if req.model != MODEL_ID:
         # The contract in the starter: reject unknown ids rather than silently
         # serving something else. The consumer checks the id it gets back.
