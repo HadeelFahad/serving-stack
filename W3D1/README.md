@@ -40,4 +40,4 @@ This made the main point of the lab clear to me: high GPU utilisation does not a
 
 ## Green Check
 
-![GREEN CHECK PASS](green_check.png)
+![GREEN CHECK PASS](GREEN CHECK PASS.png)
