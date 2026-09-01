@@ -92,6 +92,10 @@ With load shedding (cap = 8):
 
 The accepted p95 improved from `1.075 s` to `0.435 s`.
 
+Percentage reduction in p95 latency:
+
+`(old p95 - new p95) / old p95 × 100`
+
 `(1.075 - 0.435) / 1.075 × 100 = 59.5%`
 
 So the p95 was about **59.5% lower** with load shedding.
