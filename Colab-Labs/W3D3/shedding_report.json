@@ -1,0 +1,45 @@
+{
+  "naive_unbounded_n50": {
+    "n_sent": 50,
+    "n_ok": 50,
+    "p95_s": 1.075,
+    "mean_s": 1.056
+  },
+  "shedded_cap8_n50": {
+    "n_sent": 50,
+    "cap": 8,
+    "n_accepted": 8,
+    "n_shed": 42,
+    "accepted_p95_s": 0.435
+  },
+  "shedded_sweep": [
+    {
+      "n_sent": 8,
+      "cap": 8,
+      "n_accepted": 8,
+      "n_shed": 0,
+      "accepted_p95_s": 0.506
+    },
+    {
+      "n_sent": 16,
+      "cap": 8,
+      "n_accepted": 8,
+      "n_shed": 8,
+      "accepted_p95_s": 0.391
+    },
+    {
+      "n_sent": 32,
+      "cap": 8,
+      "n_accepted": 8,
+      "n_shed": 24,
+      "accepted_p95_s": 0.391
+    },
+    {
+      "n_sent": 50,
+      "cap": 8,
+      "n_accepted": 8,
+      "n_shed": 42,
+      "accepted_p95_s": 0.377
+    }
+  ]
+}
