@@ -52,3 +52,68 @@ vLLM scaled better because continuous batching can replace finished requests ins
 - GREEN CHECK: PASS
 
 ![Green Check](green_check.png)
+
+
+---
+
+## Extra Lab - Load Shedding
+
+In this lab, I tested what happens when many requests are sent to the vLLM server at the same time.
+
+I compared sending 50 requests without any limit and sending them with a limit of 8 requests at a time.
+
+### Prediction vs Actual
+
+| Metric | Prediction | Actual |
+|---|---|---|
+| 50 requests without a limit | p95 will be much worse | 1.075 s |
+| With cap = 8 | accepted p95 will be lower | 0.435 s |
+| Requests over the limit | some requests will be rejected | 42 shed |
+
+My prediction was that sending all 50 requests at the same time would increase the latency.
+
+With load shedding, only 8 requests were accepted and the other 42 were rejected quickly.
+
+### Results
+
+Without load shedding:
+
+- Sent: 50
+- Successful: 50
+- p95: 1.075 s
+- Mean: 1.056 s
+
+With load shedding (cap = 8):
+
+- Sent: 50
+- Accepted: 8
+- Shed: 42
+- Accepted p95: 0.435 s
+
+The accepted p95 improved from `1.075 s` to `0.435 s`.
+
+`(1.075 - 0.435) / 1.075 × 100 = 59.5%`
+
+So the p95 was about **59.5% lower** with load shedding.
+
+### Burst Sweep
+
+| Burst Size | Accepted | Shed | Accepted p95 |
+|---:|---:|---:|---:|
+| 8 | 8 | 0 | 0.506 s |
+| 16 | 8 | 8 | 0.391 s |
+| 32 | 8 | 24 | 0.391 s |
+| 50 | 8 | 42 | 0.377 s |
+
+As the burst size increased more requests were rejected but the p95 for the accepted requests stayed close.
+
+This shows that load shedding can protect latency when the server is overloaded.
+
+### Green Check
+
+- Naive p95: 1.075 s
+- Accepted p95: 0.435 s
+- Shed requests: 42
+- GREEN CHECK: PASS
+
+![Extra Green Check](extra_green_check.png)
