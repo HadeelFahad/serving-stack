@@ -1,0 +1,29 @@
+{
+  "model": "Qwen/Qwen2.5-1.5B-Instruct-AWQ",
+  "total_attempts": 10,
+  "score": 10,
+  "distractor_attempts": 2,
+  "distractor_call_free": 2,
+  "distractor_majority_clean": true,
+  "per_prompt": {
+    "two_tool": {
+      "k": 4,
+      "wants_call": true,
+      "valid": 4,
+      "call_free": 0
+    },
+    "single": {
+      "k": 4,
+      "wants_call": true,
+      "valid": 4,
+      "call_free": 0
+    },
+    "distractor": {
+      "k": 2,
+      "wants_call": false,
+      "valid": 0,
+      "call_free": 2
+    }
+  },
+  "passed": true
+}
